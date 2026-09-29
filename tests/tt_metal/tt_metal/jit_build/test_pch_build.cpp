@@ -107,6 +107,13 @@ TEST(PchBuildDeathTest, SharesWithinArchitectureAndSeparatesHalTargetFlags) {
         ASSERT_NE(first.get_build_key(), second.get_build_key());
         ASSERT_NE(first.get_build_key(), blackhole.get_build_key());
         ASSERT_NE(second.get_build_key(), blackhole.get_build_key());
+        // Build-key directories must be created inside <TT_METAL_CACHE>/tt-metal-cache/, not appended to its name.
+        ASSERT_EQ(
+            fs::path(first.get_out_kernel_root_path()),
+            root / "tt-metal-cache" / std::to_string(first.get_build_key()) / "kernels/");
+        ASSERT_EQ(
+            fs::path(blackhole.get_out_firmware_root_path()),
+            root / "tt-metal-cache" / std::to_string(blackhole.get_build_key()) / "firmware/");
 
         const auto source = root / "probe.cpp";
         std::ofstream(source) << "int probe() { return 42; }\n";
